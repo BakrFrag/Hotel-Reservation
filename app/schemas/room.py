@@ -5,3 +5,6 @@ class BasicRoomModel(BaseModel):
     code: str 
     type: Literal["Single","Double","Suit"]
     in_serivce: bool = True 
+
+class FullRoomModel(BasicRoomModel):
+    id: int 

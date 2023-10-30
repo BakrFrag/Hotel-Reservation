@@ -16,6 +16,12 @@ def get_room_by_code(db:Session, code:str) -> Room:
     room = db.query(Room).filter(Room.code == code).first()
     return room 
 
+def get_all_rooms(db:Session):
+    """
+    get list of all rooms
+    """
+    return db.query(Room).all()
+
 def delete_room(db:Session , room_id:int) -> None:
     """
     delete room by id 
@@ -35,7 +41,7 @@ def update_room(db:Session, room_id:int, room_data:BasicRoomModel) -> Room:
     room.price = room_data.price 
     room.type = room_data.type 
     room.in_service = room_data.in_service
-    room.code = room_data.code
+    room.code = room_data.code.lower()
     db.commit()
     db.refresh(room)
     return room
@@ -45,6 +51,7 @@ def add_room(db:Session , room_data:BasicRoomModel) -> Room:
     add new room object 
     """
     room_data = room_data.dict()
+    room_data["code"] = room_data["code"].lower()
     room = Room(**room_data)
     db.add(room)
     db.commit()
