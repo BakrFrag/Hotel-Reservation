@@ -51,7 +51,7 @@ def add_room(db:Session , room_data:BasicRoomModel) -> Room:
     add new room object 
     """
     room_data = room_data.dict()
-    room_data["code"] = room_data["code"].lower()
+    room_data["code"]=room_data["code"].lower()
     room = Room(**room_data)
     db.add(room)
     db.commit()
