@@ -1,8 +1,8 @@
 from .database import SessionLocal , engine
-from app.models.user import User
+from app.models import user as user_model
 
 #migrate User Table to Database
-User.Base.metadata.create_all(bind=engine)
+user_model.Base.metadata.create_all(bind=engine)
 # Dependency
 def get_db():
     db = SessionLocal()
