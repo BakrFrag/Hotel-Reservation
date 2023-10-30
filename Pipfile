@@ -8,6 +8,7 @@ fastapi = {extras = ["all"], version = "*"}
 python-decouple = "*"
 bcrypt = "*"
 sqlalchemy = "*"
+pyjwt = "*"
 
 [dev-packages]
 
