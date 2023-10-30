@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from app.db.dependancies import get_db
 from app.schemas.user import LoginUserModel , RegisterUserModel , FullUserModel
 from app.services import user
-
+from app.authentication.jwt_token import JWTToken
 router = APIRouter(
     prefix="/user",
     tags=["user"],
@@ -72,3 +72,19 @@ def delete_user(user_id:int, db:Session = Depends(get_db)):
 
 
     
+@router.post("/login/")
+def login_user(login_data:LoginUserModel,db:Session = Depends(get_db)):
+   
+    username = login_data.username.lower()
+    user_by_username = user.get_user_by_username(db , username=username)
+    password = login_data.password
+    
+    if ((not user_by_username) or (not password)):
+        raise HTTPException(status_code=400 , detail = "wrong username or password")
+
+    password_check = user.check_hashed_password(password , user_by_username.password)
+    if not password_check:
+        raise HTTPException(status_code=400 , detail = "wrong username or password")
+    jwt = JWTToken()
+    token_response = jwt.token_response(user_by_username.id)
+    return token_response
