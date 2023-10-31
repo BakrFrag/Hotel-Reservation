@@ -47,6 +47,16 @@ def add_reservation(db:Session , reservation_data:InReservationModel) -> Reserva
     db.refresh(reservation)
     return reservation
 
+
+
+
+def date_ranges_overlap(start_date1, end_date1, start_date2, end_date2):
+    """
+    check if two date ranges overlapped
+    """
+    return start_date1 <= end_date2 and start_date2 <= end_date1
+
+
 def validate_reservation(reservation_data:InReservationModel , db:Session = Depends(get_db)):
     """
     validate aganist reservation data
@@ -69,6 +79,16 @@ def validate_reservation(reservation_data:InReservationModel , db:Session = Depe
         raise HTTPException(status_code = 400 , detail = "Dates mustn't be in past")
     if (to_date - from_date).days < 1:
         raise HTTPException(status_code = 400 , detail = "Minium 1 Day for Reservation")
+
+
+    if not room.in_service:
+
+        raise HTTPException(status_code=400 , detail = f"room {room_id} out of service")
+
+    reservations = db.query(Reservation).filter(Reservation.room_id==room_id,Reservation.room.in_service==True,Reservation.from_date > today_date).all()
+
+    if any(date_ranges_overlap(reservation.from_date , reservation.to_date , from_date , to_date) for reservation in reservations):
+        raise HTTPException(status_code=400 , detail = f"room {room_id} has a reservation overlapped with desired reservation")
     return reservation_data
 
 
@@ -88,4 +108,6 @@ def check_rservation_can_be_deleted(reservation_id:int , db:Session = Depends(ge
         raise HTTPException(status_code = 400 , detail = "Reservation Can't Be Cancelled")
 
     return reservation_id
-    
+
+
+
