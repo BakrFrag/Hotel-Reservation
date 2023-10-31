@@ -70,3 +70,22 @@ def validate_reservation(reservation_data:InReservationModel , db:Session = Depe
     if (to_date - from_date).days < 1:
         raise HTTPException(status_code = 400 , detail = "Minium 1 Day for Reservation")
     return reservation_data
+
+
+def check_rservation_can_be_deleted(reservation_id:int , db:Session = Depends(get_db)):
+    """
+    check against delete reservation 
+    only before 2 days of start date [from_date]
+    """
+    reservation = get_reservation_by_id(db , reservation_id)
+    today_date = datetime.today().date()
+    if not reservation:
+        raise HTTPException(status_code= 400, detail = "Invalid Reservation ID")
+
+    start_date = reservation.from_date 
+    if (start_date - today_date).days < 2:
+         
+        raise HTTPException(status_code = 400 , detail = "Reservation Can't Be Cancelled")
+
+    return reservation_id
+    
