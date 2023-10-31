@@ -1,6 +1,6 @@
 from sqlalchemy import  Column, Integer, String , Enum , Float , Boolean
 from app.db.database import Base 
-
+from sqlalchemy.orm import  relationship
 
 
 class Room(Base):
@@ -11,4 +11,4 @@ class Room(Base):
     price = Column(Float , nullable = False)
     type = Column(Enum("Single","Double","Suit",name="room_types"),nullable = False)
     in_service = Column(Boolean , default = True)
-    
+    reservations = relationship("Reservation",back_populates="room")

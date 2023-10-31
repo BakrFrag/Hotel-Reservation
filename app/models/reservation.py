@@ -7,15 +7,15 @@ class Reservation(Base):
     """
     reservation reprsents reservation entity
     """
+    __tablename__ = "reservation"
     id = Column(Integer , index = True , primary_key = True )
     from_date = Column(Date) 
     to_date = Column(Date)
     room_id = Column(Integer, ForeignKey('room.id'))
     user_id = Column(Integer, ForeignKey('user.id'))
 
-    rooms = relationship("Rom", back_populates="rooms")
-    users = relationship("User", back_populates="users")
-
+    room = relationship("Room", back_populates="reservations")
+    user = relationship("User", back_populates="reservations")
 
     @hybrid_property
     def total_days(self):
@@ -29,5 +29,6 @@ class Reservation(Base):
         """
         calculate total reservation price
         """
+        print("room price:",self.room.price)
         return self.room.price * self.total_days
     

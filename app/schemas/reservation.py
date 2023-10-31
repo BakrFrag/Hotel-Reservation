@@ -16,5 +16,6 @@ class OutRservationModel(InReservationModel):
     """
     id: int 
     total_days: int 
-    total_price: float 
+    total_price: float
+   
 
