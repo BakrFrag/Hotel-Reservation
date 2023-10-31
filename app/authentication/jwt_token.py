@@ -13,7 +13,7 @@ class JWTToken(object):
     def __init__(self):
         self.payload = {
             "user_id":None , 
-            "expires": time.time() + 2400
+            "expires": time.time() + 3600
         }
 
     def token_response(self,user_id:int) -> Dict[str,str]:
@@ -38,10 +38,15 @@ class JWTToken(object):
         """
         verify token if it is still valid or not
         """
-        
-        decoded_token = jwt.decode(
-            token, 
-            self.secret_key, 
-            algorithms=[self.algorithm])
-        return decoded_token if decoded_token.get("expires") > time.time() else None
+        try:
+            
+            decoded_token = jwt.decode(
+                token, 
+                self.secret_key, 
+                algorithms=[self.algorithm])
+            return decoded_token if decoded_token.get("expires") > time.time() else None
+
+        except Exception as E:
+            
+            return None
               

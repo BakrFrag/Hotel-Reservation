@@ -3,6 +3,8 @@ from datetime import datetime
 from fastapi import HTTPException , Depends
 from app.schemas.reservation import  InReservationModel
 from app.models.reservation import Reservation
+from app.models.room import Room
+from app.models.room import Room
 from app.services.room import get_room_by_id
 from app.services.user import get_user_by_id
 from app.db.dependancies import get_db
@@ -36,12 +38,12 @@ def delete_reservation(db:Session , reservation_id:int) -> None:
 
 
 
-def add_reservation(db:Session , reservation_data:InReservationModel) -> Reservation:
+def add_reservation(db:Session ,user_id:int,  reservation_data:InReservationModel) -> Reservation:
     """
     add new Reservation object 
     """
     reservation_data = reservation_data.dict()
-    reservation = Reservation(**reservation_data)
+    reservation = Reservation(**reservation_data,user_id = user_id)
     db.add(reservation)
     db.commit()
     db.refresh(reservation)
@@ -62,31 +64,33 @@ def validate_reservation(reservation_data:InReservationModel , db:Session = Depe
     validate aganist reservation data
     """
     room_id = reservation_data.room_id 
-    user_id = reservation_data.user_id
     from_date = reservation_data.from_date
     to_date = reservation_data.to_date
     today_date = datetime.today().date()
     room = get_room_by_id(db , room_id)
-    print("dates condition",(to_date - from_date).days)
+    
     if not room:
         raise HTTPException(status_code = 400 , detail = "Invalid Room ID")
 
-    user = get_user_by_id(db, user_id)
-    if not user:
-        raise HTTPException(status_code = 400 , detail = "Invalid User ID")
+    
 
     if ((from_date < today_date) or (to_date < today_date)):
         raise HTTPException(status_code = 400 , detail = "Dates mustn't be in past")
     if (to_date - from_date).days < 1:
         raise HTTPException(status_code = 400 , detail = "Minium 1 Day for Reservation")
 
-
+    
     if not room.in_service:
-
+               
+       
         raise HTTPException(status_code=400 , detail = f"room {room_id} out of service")
 
-    reservations = db.query(Reservation).filter(Reservation.room_id==room_id,Reservation.room.in_service==True,Reservation.from_date > today_date).all()
-
+    reservations = db.query(Reservation).join(Reservation.room).filter(
+        Room.in_service== True , 
+        Reservation.room_id == Room.id , 
+        Reservation.to_date > today_date
+    )
+    
     if any(date_ranges_overlap(reservation.from_date , reservation.to_date , from_date , to_date) for reservation in reservations):
         raise HTTPException(status_code=400 , detail = f"room {room_id} has a reservation overlapped with desired reservation")
     return reservation_data

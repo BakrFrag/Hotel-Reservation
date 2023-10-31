@@ -3,6 +3,7 @@ from sqlalchemy.orm import Session
 from app.db.dependancies import get_db
 from app.schemas.reservation import InReservationModel , OutRservationModel
 from app.authentication.http_authorization import JWTBearer
+from app.authentication.utils import get_current_user
 from app.services import reservation
 from typing import List 
 
@@ -14,12 +15,12 @@ router = APIRouter(
 )
 
 @router.post("/add/",response_model=OutRservationModel)
-def add_reservation(reservation_data:InReservationModel = Depends(reservation.validate_reservation), db:Session= Depends(get_db)) -> OutRservationModel:
+def add_reservation(reservation_data:InReservationModel = Depends(reservation.validate_reservation),user_id:int = Depends(get_current_user),db:Session= Depends(get_db)) -> OutRservationModel:
     """
     add new reservation object in database 
     """
-    
-    reservation_object = reservation.add_reservation(db , reservation_data)
+    print("current user id:",user_id)
+    reservation_object = reservation.add_reservation(db ,user_id = user_id ,  reservation_data = reservation_data)
     return reservation_object
 
 
