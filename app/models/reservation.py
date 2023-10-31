@@ -10,8 +10,8 @@ class Reservation(Base):
     id = Column(Integer , index = True , primary_key = True )
     from_date = Column(Date) 
     to_date = Column(Date)
-    room = Column(Integer, ForeignKey('room.id'))
-    user = Column(Integer, ForeignKey('user.id'))
+    room_id = Column(Integer, ForeignKey('room.id'))
+    user_id = Column(Integer, ForeignKey('user.id'))
 
     rooms = relationship("Rom", back_populates="rooms")
     users = relationship("User", back_populates="users")
