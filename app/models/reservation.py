@@ -29,6 +29,5 @@ class Reservation(Base):
         """
         calculate total reservation price
         """
-        print("room price:",self.room.price)
         return self.room.price * self.total_days
     

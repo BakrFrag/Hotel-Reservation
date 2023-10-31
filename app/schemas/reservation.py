@@ -1,4 +1,5 @@
-from pydantic import BaseModel
+from pydantic import BaseModel 
+from typing import Optional
 from datetime import date 
 
 class InReservationModel(BaseModel):
@@ -17,6 +18,6 @@ class OutRservationModel(InReservationModel):
     id: int 
     user_id: int
     total_days: int 
-    total_price: float
+    total_price: Optional[float] = None 
    
 

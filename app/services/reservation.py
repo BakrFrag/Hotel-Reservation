@@ -19,11 +19,11 @@ def get_reservation_by_id(db:Session , reservation_id:int) -> Reservation:
 
 
 
-def get_all_reservations(db:Session):
+def get_all_reservations(db:Session , user_id:int):
     """
     get list of all Reservations
     """
-    return db.query(Reservation).all()
+    return db.query(Reservation).filter(Reservation.user_id==user_id).all()
 
 def delete_reservation(db:Session , reservation_id:int) -> None:
     """
@@ -87,8 +87,8 @@ def validate_reservation(reservation_data:InReservationModel , db:Session = Depe
 
     reservations = db.query(Reservation).join(Reservation.room).filter(
         Room.in_service== True , 
-        Reservation.room_id == Room.id , 
-        Reservation.to_date > today_date
+        Reservation.room_id == Room.id 
+       
     )
     
     if any(date_ranges_overlap(reservation.from_date , reservation.to_date , from_date , to_date) for reservation in reservations):
