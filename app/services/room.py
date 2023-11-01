@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
 from app.schemas.room import *
 from app.models.room import Room 
-
+from fastapi import  HTTPException
 def get_room_by_id(db:Session , room_id:int) -> Room:
     """
     get room by id
@@ -57,3 +57,13 @@ def add_room(db:Session , room_data:BasicRoomModel) -> Room:
     db.commit()
     db.refresh(room)
     return room
+
+def validate_room_data(room_data:BasicRoomModel):
+    """
+    validate parsed room data
+    """
+    room_price = room_data.price
+    if room_price <=0:
+        raise HTTPException(status_code = 400 , detail = "room price must be greater than 0")
+
+    return room_data

@@ -13,7 +13,7 @@ router = APIRouter(
 )
 
 @router.post("/add/",response_model=FullRoomModel)
-def add_room(room_data:BasicRoomModel , db:Session= Depends(get_db)) -> FullRoomModel:
+def add_room(room_data:BasicRoomModel = Depends(room.validate_room_data) , db:Session= Depends(get_db)) -> FullRoomModel:
     """
     add new room object in database 
     """
@@ -33,7 +33,7 @@ def get_all_rooms(db:Session = Depends(get_db)) -> List[FullRoomModel]:
 
 
 @router.put("/{room_id}/", response_model = FullRoomModel)
-def update_room(room_id:int , room_data:BasicRoomModel , db:Session = Depends(get_db)):
+def update_room(room_id:int , room_data:BasicRoomModel = Depends(room.validate_room_data) , db:Session = Depends(get_db)):
     """
     update room data
     """
