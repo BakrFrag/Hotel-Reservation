@@ -40,9 +40,7 @@ def delete_reservation(reservation_id:int = Depends(reservation.check_rservation
     """
     delete reservation
     """
-    reservation_by_id = reservation.get_reservation_by_id(db , reservation_id)
-    if not reservation_by_id:
-        raise HTTPException(status_code= 400 , detail = f"no reservation with id {reservation_id}")
+    
 
     reservation.delete_reservation(db , reservation_id)
     return {
